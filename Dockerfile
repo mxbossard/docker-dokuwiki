@@ -44,13 +44,8 @@ ENV DOKUWIKI_VERSION="2018-04-22b" \
 RUN apk --update --no-cache add -t build-dependencies \
     gnupg \
     wget \
-  && cd /tmp \
-  && wget -q "https://download.dokuwiki.org/src/dokuwiki/dokuwiki-$DOKUWIKI_VERSION.tgz" \
-  && echo "$DOKUWIKI_MD5  /tmp/dokuwiki-$DOKUWIKI_VERSION.tgz" | md5sum -c - | grep OK \
-  && tar -xzf "dokuwiki-$DOKUWIKI_VERSION.tgz" --strip 1 -C /var/www \
   && apk del build-dependencies \
-  && chown -R nginx. /var/lib/nginx /var/log/nginx /var/log/php7 /var/tmp/nginx /var/www \
-  && rm -rf  /root/.gnupg /tmp/* /var/cache/apk/*
+  && chown -R nginx. /var/lib/nginx /var/log/nginx /var/log/php7 /var/tmp/nginx /var/www
 
 COPY entrypoint.sh /entrypoint.sh
 COPY assets /
@@ -60,7 +55,7 @@ RUN mkdir -p /var/log/supervisord \
 
 EXPOSE 8000
 WORKDIR /var/www
-VOLUME [ "/data" ]
+VOLUME [ "/data", "/var/www" ]
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/usr/bin/supervisord", "-c", "/etc/supervisord.conf" ]
